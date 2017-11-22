@@ -11,7 +11,7 @@ class Game < ApplicationRecord
     def self.new_from_result(game_params, current_user)
         opponent = Player.find_by_username game_params["opponent"]
         g = Game.new
-        if game_params["side"] == "White"
+        if game_params["side"] == "white"
             g.white = current_user 
             g.black = opponent
         else
@@ -19,9 +19,9 @@ class Game < ApplicationRecord
             g.black = current_user
         end
         g.result = 1 
-        if game_params["whoWon"] == "Black"
+        if game_params["whoWon"] == "black"
             g.result = -1
-        elsif  game_params["whoWon"] == "Draw"
+        elsif  game_params["whoWon"] == "draw"
             g.result = 0
         end
         g
