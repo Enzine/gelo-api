@@ -1,6 +1,7 @@
 class GamesController < ApplicationController
   before_action :set_game, only: [:show, :update, :destroy]
   before_action :authorize
+  before_action :authorize_self, only: [:confirm]
   
   # GET /games
   def index
@@ -14,10 +15,27 @@ class GamesController < ApplicationController
     render json: @game
   end
 
+  def confirm
+    g = Game.find params[:id]
+    g.confirmed = true
+    if g.save
+      render json: {status: :success}, status: :ok
+    else
+      render json: {status: "Something went wrong"}, status: :unprocessable_entity
+    end
+  end
+
+  # GET /notifications
+  def notifications
+    games = current_user.unconfirmed_games
+
+    render json: games, status: 200
+  end
+
   # POST /games
   def create
     @game = Game.new_from_result(game_params, current_user)
-        
+
     if @game.save
       render json: @game, status: :created, location: @game
     else

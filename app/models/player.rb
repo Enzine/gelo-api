@@ -6,6 +6,16 @@ class Player < ApplicationRecord
 
     validates :username, uniqueness: true
 
+    def games
+        Game.where(white: self).or(Game.where(black: self))
+    end
+
+    def unconfirmed_games
+        Game.where(white: self, confirmed: :false)
+            .or(Game.where(black: self))
+            .where.not(added_by: self)
+    end
+
     private
         def generate_token
             self.token = loop do
