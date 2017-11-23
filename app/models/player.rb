@@ -1,10 +1,20 @@
 class Player < ApplicationRecord
     has_secure_password
 
-    after_create_commit :generate_token
-    after_create_commit :initial_ratings
+    before_create :generate_token
+    before_create :initial_ratings
 
     validates :username, uniqueness: true
+
+    def games
+        Game.where(white: self).or(Game.where(black: self))
+    end
+
+    def unconfirmed_games
+        Game.where(white: self, confirmed: :false)
+            .or(Game.where(black: self))
+            .where.not(added_by: self)
+    end
 
     private
         def generate_token
